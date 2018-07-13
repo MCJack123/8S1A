@@ -1,6 +1,9 @@
 # 8S1A Assembler
 This program takes in assembly code that you write and turns it into CPU instructions that you can run.
 
+# Compiling
+`g++ -o 8s1a-as -std=c++11 8s1a-as.cpp`
+
 # How to use
 First, write the code in a file (obviously), making sure to use the syntax below. Then run the assembler with the source file and the destination binary file. Then you can use any binary editor to view the output code and run it on the CPU.
 
