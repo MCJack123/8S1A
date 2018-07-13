@@ -1,2 +1,3 @@
 theme: jekyll-theme-cayman
 site.github.zip_url: https://github.com/MCJack123/8S1A/releases/download/8S1A/8S1A.CPU.zip
+site.show_downloads: true
