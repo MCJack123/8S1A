@@ -1,4 +1,5 @@
 # 8S1A CPU
+![CPU](https://github.com/MCJack123/8S1A/raw/gh-pages/2018-07-13_00.26.11.png)
 The 8S1A is an 8-bit microprocessor for Minecraft. It includes 128 bytes of memory built-in, and includes 9 instructions. 
 
 # IMPORTANT
