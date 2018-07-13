@@ -88,11 +88,14 @@ int main(int argc, const char * argv[]) {
     std::string line;
     std::vector<char> outfile;
     std::map<std::string, std::string> replacements;
+    replacements["rbx"] = "$0";
+    std::map<std::string, int> newInstructions;
     int linenum;
     int section = -1;
     int err = 0;
     int spec = 0;
     int inIf = 0;
+    int lastvar = 0;
     for (linenum = 1; in.good() && !in.eof(); linenum++) {
         std::getline(in, line);
         line = reduce(line);
@@ -150,6 +153,8 @@ int main(int argc, const char * argv[]) {
                 outfile.push_back(126);
                 inIf--;
                 continue;
+            } else if (newInstructions.find(instr) != newInstructions.end()) {
+                outfile.push_back(newInstructions[instr]);
             } else {
                 err(0, instr, ERR_INVALID_INSTRUCTION);
             }
@@ -209,20 +214,25 @@ int main(int argc, const char * argv[]) {
             std::string value = line.substr(line.find(' ') + 1, line.find(';') - line.find(' ') - 2);
             name = reduce(name);
             value = reduce(value);
-            std::vector<std::string> values = split(value, ',');
-            values[0] = reduce(values[0]);
-            int argnum;
-            try {
-                argnum = std::stoi(values[0]);
-            } catch (const std::invalid_argument& e) {
-                err(line.find(' ') + 1, values[0], ERR_NOT_A_NUMBER);
+            std::string curvar;
+            if (value != "") {
+                std::vector<std::string> values = split(value, ',');
+                values[0] = reduce(values[0]);
+                int argnum;
+                try {
+                    argnum = std::stoi(values[0]);
+                } catch (const std::invalid_argument& e) {
+                    err(line.find(' ') + 1, values[0], ERR_NOT_A_NUMBER);
+                    continue;
+                }
+                lastvar = argnum;
+                curvar = std::to_string(argnum);
+            } else curvar = std::to_string(++lastvar);
+            if (lastvar > 255) {
+                err(line.find(' ') + 1, curvar, ERR_INVALID_NUMBER);
                 continue;
             }
-            if (argnum > 255) {
-                err(line.find(' ') + 1, argnum, ERR_INVALID_NUMBER);
-                continue;
-            }
-            replacements.insert(std::make_pair(name, "$" + values[0]));
+            replacements.insert(std::make_pair(name, "$" + curvar));
             if (values.size() > 1) {
                 values[1] = reduce(values[1]);
                 int newargnum;
@@ -237,13 +247,13 @@ int main(int argc, const char * argv[]) {
                     continue;
                 }
                 outfile.push_back(2);
-                outfile.push_back((char)argnum);
+                outfile.push_back((char)lastvar);
                 outfile.push_back((char)newargnum);
             }
         } else if (section == 3) {
             std::string inst = line.substr(0, 4);
             if (inst == "spec") {
-                std::string value = reduce(line.substr(5, line.find(';') - 5));
+                std::string value = reduce(line.substr(4, line.find(';') - 5));
                 if (value == "8S1A") spec = 0;
                 else if (value == "ROM") spec = 1;
                 else if (value == "8H1A") spec = 2;
@@ -251,7 +261,14 @@ int main(int argc, const char * argv[]) {
                     err(5, value, ERR_INVALID_INSTRUCTION);
                 }
             } else if (inst == "inst") {
-                
+                std::string argstr = line.substr(4, line.find(";") - 5);
+                std::vector<std::string> args = split(reduce(argstr), ',');
+                if (args.size() < 2) {
+                    err(5, argstr, ERR_INVALID_INSTRUCTION);
+                } else newInstructions[args[0]] = std::stoi(args[1]);
+            } else {
+                err(0, inst, ERR_INVALID_INSTRUCTION);
+            }
         }
     }
 write:
