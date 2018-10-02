@@ -1,6 +1,6 @@
 # 8S1A CPU
 ![CPU](https://github.com/MCJack123/8S1A/raw/gh-pages/2018-07-13_00.26.11.png)
-The 8S1A is an 8-bit microprocessor for Minecraft. It includes 128 bytes of memory built-in, and includes 9 instructions. 
+The 8S1A is an 8-bit microprocessor for Minecraft. It includes 128 bytes of memory built-in, and features 9 instructions. 
 
 # IMPORTANT
 This world was made in 1.13. Since 1.13 adds a new world layout system, it is impossible to load this world in 1.12 or below. This also means that you cannot copy the CPU into a pre-existing world without copying in the region file manually. **Do NOT try to load the world in 1.12, or you WILL experience data loss.** (You can always download a new copy of the CPU, though.)
